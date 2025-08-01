@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Генератор настроения 1.0</title>
+  <!-- Для мобильных устройств: -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       background: #fff;
@@ -120,6 +122,36 @@
       right: 8px;
       font-size: 0.9em;
       color: #bbb;
+    }
+
+    /* Адаптив для мобильных */
+    @media (max-width: 1200px) {
+      .slots {
+        gap: 2vw;
+      }
+      .slot {
+        width: 120px;
+        height: 120px;
+        font-size: 3em;
+      }
+      .result {
+          margin-top: 1vw;
+          font-size: 1.4em;
+      }
+      button {
+        padding: 20px 56px;
+        font-size: 1.5em;
+      }
+      h1 {
+        font-size: 2em;
+        margin-bottom: 4vw;
+      }
+      .btn-container {
+        bottom: 32px;
+      }
+      .credits {
+        font-size: 0.8em;
+      }
     }
   </style>
 </head>
