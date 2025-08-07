@@ -1025,7 +1025,12 @@
       mintButtonContainer.classList.remove('show');
       spinBtn.classList.add('hidden');
       burstEmojisFromButton();
-      
+      // Очищаем emoji сразу
+      moodEmoji.innerHTML = '';
+
+      // Удаляем картинку/контент из moodEmoji сразу при spin
+      moodEmoji.innerHTML = '';
+
       // Сбрасываем состояние слотов
       slotEls.forEach(slot => {
         slot.classList.remove('finished');
@@ -1095,19 +1100,15 @@
       const metrics = calculateMoodMetrics(arr);
       const moodLevelData = getMoodLevel(metrics.finalScore);
       let isEpicApi = false;
-
-      // Формируем текст настроения с заглавной буквы
       let obj0 = getEmojiObj(arr[0]);
       let obj1 = getEmojiObj(arr[1]);
       let obj2 = getEmojiObj(arr[2]);
       let moodPhrase = "";
-
       if (arr[0] === arr[1] && arr[1] === arr[2]) {
         // 1. Для легендарных: отправляем запрос с короной
         moodPhrase = `Очень ${obj0.moodParts[2]}!`;
         const emojiString = encodeURIComponent(arr[0] + '_👑');
         const apiUrl = `https://emojik.vercel.app/s/${emojiString}?size=48`;
-        // Удаляем старое содержимое
         moodEmoji.innerHTML = '';
         fetch(apiUrl).then(resp => {
           if (resp.ok) {
@@ -1117,9 +1118,8 @@
               img.classList.remove('emoji-fusion');
             });
           } else {
-            moodEmoji.textContent = '👑' + arr[0];
+            moodEmoji.textContent = moodLevelData.emoji;
           }
-          // Легендарное всегда
           const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
           // 2. Скрываем поле rarityBadge при статусе "Обычное"
           if (rarityData.name === 'Обычное') {
@@ -1130,7 +1130,7 @@
             rarityBadge.className = `rarity-badge ${rarityData.class}`;
           }
         }).catch(() => {
-          moodEmoji.textContent = '👑' + arr[0];
+          moodEmoji.textContent = moodLevelData.emoji;
           const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
           if (rarityData.name === 'Обычное') {
             rarityBadge.style.display = 'none';
@@ -1141,8 +1141,7 @@
           }
         });
       } else if (metrics.uniqueEmojis === 2) {
-        // ...эпик по API...
-        // Определяем, какой смайл встречается дважды
+        // Два одинаковых и один отличный
         let mainEmoji, extraEmoji;
         if (arr[0] === arr[1]) {
           mainEmoji = obj0;
@@ -1154,12 +1153,11 @@
           mainEmoji = obj1;
           extraEmoji = obj0;
         }
-        // moodParts[2] — нужная словоформа, без пробелов, X с заглавной, Y с прописной
-        let x = mainEmoji.moodParts[2].replace(/\s+/g, '');
-        let y = extraEmoji.moodParts[2].replace(/\s+/g, '');
-        x = x.charAt(0).toUpperCase() + x.slice(1);
-        y = y.charAt(0).toLowerCase() + y.slice(1);
-        moodPhrase = `${x}-${y}`;
+        let first = mainEmoji.moodParts[0].replace(/\s+/g, '');
+        let second = extraEmoji.moodParts[2].replace(/\s+/g, '');
+        first = first.charAt(0).toUpperCase() + first.slice(1);
+        second = second.charAt(0).toLowerCase() + second.slice(1);
+        moodPhrase = `${first}-${second}`;
         const uniqueEmojisArr = Array.from(new Set(arr));
         const emojiString = uniqueEmojisArr.join('_');
         const apiUrl = `https://emojik.vercel.app/s/${encodeURIComponent(emojiString)}?size=48`;
@@ -1196,13 +1194,14 @@
         });
       } else {
         // Три разных
-        let x = obj0.moodParts[2].replace(/\s+/g, '');
-        let y = obj1.moodParts[2].replace(/\s+/g, '');
+        let x = obj0.moodParts[0].replace(/\s+/g, '');
+        let y = obj1.moodParts[1].replace(/\s+/g, '');
         let z = obj2.moodParts[2].replace(/\s+/g, '');
         x = x.charAt(0).toUpperCase() + x.slice(1);
         y = y.charAt(0).toLowerCase() + y.slice(1);
         z = z.charAt(0).toLowerCase() + z.slice(1);
         moodPhrase = `${x}-${y}-${z}`;
+        // Для трёх разных всегда emoji уровня настроения
         moodEmoji.textContent = moodLevelData.emoji;
         const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
         if (rarityData.name === 'Обычное') {
