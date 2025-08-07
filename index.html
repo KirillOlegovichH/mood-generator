@@ -493,10 +493,58 @@
       60% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
     }
+
+    .spin-arrow-hint {
+      position: fixed;
+      left: 50%;
+      top: 44%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.4s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .spin-arrow-hint.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .arrow-bounce {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: arrowBounce 1.2s infinite;
+    }
+    @keyframes arrowBounce {
+      0% { transform: translateY(0); }
+      40% { transform: translateY(10px); }
+      60% { transform: translateY(0); }
+      100% { transform: translateY(0); }
+    }
+    .arrow-text {
+      color: #fff;
+      font-size: 1em;
+      margin-top: 0.3em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      opacity: 0.85;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
   </style>
 </head>
 <body>
   <h1>Генератор настроения</h1>
+  <!-- Стрелка-подсказка -->
+  <div id="spinArrowHint" class="spin-arrow-hint">
+    <div class="arrow-bounce">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <path d="M24 8v28M24 36l-8-8M24 36l8-8" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="arrow-text">Нажмите на кнопку</div>
+    </div>
+  </div>
   <!-- Слоты для эмодзи -->
   <div class="slots">
     <div class="slot" id="slot1">🤔</div>
@@ -977,14 +1025,14 @@
     function generateSmartResult() {
       const rand = Math.random();
       
-      // 22% шанс на тройку одинаковых (увеличено с 15%)
-      if (rand < 0.22) {
+      // 22% шанс на тройку одинаковых
+      if (rand < 0.25) {
         const emoji = randomEmojiObj().emoji;
         return [emoji, emoji, emoji];
       }
       
-      // 35% шанс на пару одинаковых (увеличено с 25%)
-      if (rand < 0.57) {
+      // 35% шанс на пару одинаковых
+      if (rand < 0.50) {
         const emoji1 = randomEmojiObj().emoji;
         const emoji2 = randomEmojiObj().emoji;
         
@@ -1383,6 +1431,22 @@ function playFusionLoader(emoji1, emoji2, callback) {
     // События: запуск слотов и минт NFT
     spinBtn.addEventListener('click', spinSlots);
     mintButton.addEventListener('click', mintNFT);
+
+    // Стрелка-подсказка
+    const spinArrowHint = document.getElementById('spinArrowHint');
+    let spinStarted = false;
+    function hideSpinArrow() {
+      if (spinArrowHint) spinArrowHint.classList.add('hide');
+    }
+    // Скрыть стрелку при клике на spin
+    spinBtn.addEventListener('click', () => {
+      spinStarted = true;
+      hideSpinArrow();
+    });
+    // Скрыть стрелку при прокрутке (на всякий случай)
+    window.addEventListener('scroll', () => {
+      if (!spinStarted) hideSpinArrow();
+    });
   </script>
 </body>
 </html>
