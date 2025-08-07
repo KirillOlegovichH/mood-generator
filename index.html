@@ -6,15 +6,19 @@
   <!-- Для мобильных устройств: -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    /* Основные стили для body и фона */
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #2c3e50;
-      font-family: 'Segoe UI', 'Apple Color Emoji', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 20% 0 0 0;
-      height: 100vh;
+    background: linear-gradient(135deg, #cad4fd 0%, #222223 100%);
+    color: #2c3e50;
+    font-family: 'Segoe UI', 'Apple Color Emoji', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto 0;
+    height: 100vh;
+    overflow: hidden;
+    transition: background 1s ease;
+    justify-content: center;
       overflow: hidden;
       transition: background 1s ease;
     }
@@ -43,9 +47,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, rgb(159 161 175), rgb(104 73 137));
       transition: all 0.3s ease;
-      filter: grayscale(1);
+      filter: grayscale(0.5);
       box-shadow: 
         0 4px 15px rgba(0,0,0,0.2),
         inset 0 1px 0 rgba(255,255,255,0.3);
@@ -74,7 +78,7 @@
       z-index: 10;
       pointer-events: none;
     }
-    button {
+    #spin {
       background: rgba(255, 255, 255, 0.2);
       color: #333;
       border: 2px solid rgba(255, 255, 255, 0.3);
@@ -95,23 +99,23 @@
       justify-content: center;
       backdrop-filter: blur(10px);
     }
-    button::before {
+    #spin::before {
       content: "🎰";
       font-size: 2.5em;
       transition: all 0.2s ease;
       opacity: 0.8;
     }
-    button:hover {
+    #spin:hover {
       background: rgba(255, 255, 255, 0.3);
       transform: translateY(-5px) scale(1.05);
       box-shadow: 
         0 8px 20px rgba(0,0,0,0.2),
         inset 0 2px 0 rgba(255,255,255,0.5);
     }
-    button:hover::before {
+    #spin:hover::before {
       opacity: 1;
     }
-    button:active {
+    #spin:active {
       background: rgba(255, 255, 255, 0.15);
       transform: translateY(-2px) scale(0.98);
       box-shadow: 
@@ -399,18 +403,31 @@
       color: rgba(255,255,255,0.7);
       text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
+
+    /* 6. CSS для анимации скрещивания */
+    .emoji-fusion {
+      animation: fusionPop 0.5s cubic-bezier(.4,2,.6,1) 1;
+    }
+    @keyframes fusionPop {
+      0% { transform: scale(0.2) rotate(-60deg); opacity: 0; }
+      60% { transform: scale(1.2) rotate(30deg); opacity: 0.7; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
   </style>
 </head>
 <body>
   <h1>Генератор настроения</h1>
+  <!-- Слоты для эмодзи -->
   <div class="slots">
     <div class="slot" id="slot1">🤔</div>
     <div class="slot" id="slot2">🤔</div>
     <div class="slot" id="slot3">🤔</div>
   </div>
+  <!-- Кнопка запуска -->
   <div class="btn-container">
-    <button id="spin"></button>
+    <div id="spin"></div>
   </div>
+  <!-- Блок результата -->
   <div class="result-container" id="resultContainer">
     <div class="result-card">
       <div class="mood-level" id="moodLevel">Настроение</div>
@@ -551,7 +568,7 @@
       },
       {
         emoji: "🤔",
-        gradient: ["#667eea", "#764ba2"],
+        gradient: ["#9fa1af", "#684989"],
         moodParts: ["задумчиво", "задумчиво", "задумчивое"],
         rating: 3
       },
@@ -954,16 +971,16 @@
     }
 
     // Определение редкости
-    function getRarity(uniqueEmojis, averageRating) {
+    function getRarity(uniqueEmojis, averageRating, isEpicApi) {
       if (uniqueEmojis === 1) {
-        if (averageRating >= 4.5) return { name: "Легендарное", class: "rarity-legendary" };
-        if (averageRating >= 3.5) return { name: "Эпическое", class: "rarity-epic" };
-        return { name: "Редкое", class: "rarity-rare" };
-      } else if (uniqueEmojis === 2) {
-        if (averageRating >= 4) return { name: "Эпическое", class: "rarity-epic" };
+        // Легендарное только для 3 одинаковых
+        return { name: "Легендарное", class: "rarity-legendary" };
+      } else if (isEpicApi) {
+        // Эпическое только если была картинка по API
+        return { name: "Эпическое", class: "rarity-epic" };
+      } else if (averageRating >= 4.5) {
         return { name: "Редкое", class: "rarity-rare" };
       } else {
-        if (averageRating >= 4.5) return { name: "Редкое", class: "rarity-rare" };
         return { name: "Обычное", class: "rarity-common" };
       }
     }
@@ -997,7 +1014,7 @@
       if (emojiObj && emojiObj.gradient) {
         slotElement.style.background = `linear-gradient(135deg, ${emojiObj.gradient[0]}, ${emojiObj.gradient[1]})`;
       } else {
-        slotElement.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        slotElement.style.background = "linear-gradient(135deg, rgb(159 161 175), rgb(104 73 137))";
       }
     }
 
@@ -1012,8 +1029,8 @@
       // Сбрасываем состояние слотов
       slotEls.forEach(slot => {
         slot.classList.remove('finished');
-        slot.style.filter = "grayscale(1)";
-        slot.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        slot.style.filter = "grayscale(0.5)";
+        slot.style.background = "linear-gradient(135deg, rgb(159 161 175), rgb(104 73 137))";
       });
 
       let spins = 10;
@@ -1067,7 +1084,7 @@
       });
       colors = [...new Set(colors)];
       if (!colors.length) {
-        body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        body.style.background = "linear-gradient(135deg, rgb(159 161 175), rgb(104 73 137))";
         return;
       }
       body.style.background = `linear-gradient(135deg, ${colors.join(", ")})`;
@@ -1077,44 +1094,127 @@
     function showResult(arr) {
       const metrics = calculateMoodMetrics(arr);
       const moodLevelData = getMoodLevel(metrics.finalScore);
-      const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating);
+      let isEpicApi = false;
 
       // Формируем текст настроения с заглавной буквы
       let obj0 = getEmojiObj(arr[0]);
       let obj1 = getEmojiObj(arr[1]);
       let obj2 = getEmojiObj(arr[2]);
       let moodPhrase = "";
-      
+
       if (arr[0] === arr[1] && arr[1] === arr[2]) {
+        // 1. Для легендарных: отправляем запрос с короной
         moodPhrase = `Очень ${obj0.moodParts[2]}!`;
-      } else if (arr[0] === arr[1]) {
-        moodPhrase = `${obj0.moodParts[0]}-${obj2.moodParts[2]}`;
-      } else if (arr[0] === arr[2]) {
-        moodPhrase = `${obj2.moodParts[0]}-${obj1.moodParts[2]}`;
-      } else if (arr[1] === arr[2]) {
-        moodPhrase = `${obj2.moodParts[0]}-${obj0.moodParts[2]}`;
+        const emojiString = encodeURIComponent(arr[0] + '_👑');
+        const apiUrl = `https://emojik.vercel.app/s/${emojiString}?size=48`;
+        // Удаляем старое содержимое
+        moodEmoji.innerHTML = '';
+        fetch(apiUrl).then(resp => {
+          if (resp.ok) {
+            moodEmoji.innerHTML = `<img src='${apiUrl}' alt='legendary' class='emoji-fusion' style='width:64px;height:64px;vertical-align:middle;'>`;
+            const img = moodEmoji.querySelector('img');
+            img.addEventListener('animationend', () => {
+              img.classList.remove('emoji-fusion');
+            });
+          } else {
+            moodEmoji.textContent = '👑' + arr[0];
+          }
+          // Легендарное всегда
+          const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
+          // 2. Скрываем поле rarityBadge при статусе "Обычное"
+          if (rarityData.name === 'Обычное') {
+            rarityBadge.style.display = 'none';
+          } else {
+            rarityBadge.style.display = '';
+            rarityBadge.textContent = rarityData.name;
+            rarityBadge.className = `rarity-badge ${rarityData.class}`;
+          }
+        }).catch(() => {
+          moodEmoji.textContent = '👑' + arr[0];
+          const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
+          if (rarityData.name === 'Обычное') {
+            rarityBadge.style.display = 'none';
+          } else {
+            rarityBadge.style.display = '';
+            rarityBadge.textContent = rarityData.name;
+            rarityBadge.className = `rarity-badge ${rarityData.class}`;
+          }
+        });
+      } else if (metrics.uniqueEmojis === 2) {
+        // ...эпик по API...
+        // Определяем, какой смайл встречается дважды
+        let mainEmoji, extraEmoji;
+        if (arr[0] === arr[1]) {
+          mainEmoji = obj0;
+          extraEmoji = obj2;
+        } else if (arr[0] === arr[2]) {
+          mainEmoji = obj0;
+          extraEmoji = obj1;
+        } else {
+          mainEmoji = obj1;
+          extraEmoji = obj0;
+        }
+        // moodParts[2] — нужная словоформа, без пробелов, X с заглавной, Y с прописной
+        let x = mainEmoji.moodParts[2].replace(/\s+/g, '');
+        let y = extraEmoji.moodParts[2].replace(/\s+/g, '');
+        x = x.charAt(0).toUpperCase() + x.slice(1);
+        y = y.charAt(0).toLowerCase() + y.slice(1);
+        moodPhrase = `${x}-${y}`;
+        const uniqueEmojisArr = Array.from(new Set(arr));
+        const emojiString = uniqueEmojisArr.join('_');
+        const apiUrl = `https://emojik.vercel.app/s/${encodeURIComponent(emojiString)}?size=48`;
+        moodEmoji.innerHTML = '';
+        fetch(apiUrl).then(resp => {
+          if (resp.ok) {
+            isEpicApi = true;
+            moodEmoji.innerHTML = `<img src='${apiUrl}' alt='${emojiString}' class='emoji-fusion' style='width:64px;height:64px;vertical-align:middle;'>`;
+            const img = moodEmoji.querySelector('img');
+            img.addEventListener('animationend', () => {
+              img.classList.remove('emoji-fusion');
+            });
+          } else {
+            moodEmoji.textContent = moodLevelData.emoji;
+          }
+          const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, resp.ok);
+          if (rarityData.name === 'Обычное') {
+            rarityBadge.style.display = 'none';
+          } else {
+            rarityBadge.style.display = '';
+            rarityBadge.textContent = rarityData.name;
+            rarityBadge.className = `rarity-badge ${rarityData.class}`;
+          }
+        }).catch(() => {
+          moodEmoji.textContent = moodLevelData.emoji;
+          const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
+          if (rarityData.name === 'Обычное') {
+            rarityBadge.style.display = 'none';
+          } else {
+            rarityBadge.style.display = '';
+            rarityBadge.textContent = rarityData.name;
+            rarityBadge.className = `rarity-badge ${rarityData.class}`;
+          }
+        });
       } else {
-        moodPhrase = `${obj0.moodParts[0]}-${obj1.moodParts[1]}-${obj2.moodParts[2]}`;
+        // Три разных
+        let x = obj0.moodParts[2].replace(/\s+/g, '');
+        let y = obj1.moodParts[2].replace(/\s+/g, '');
+        let z = obj2.moodParts[2].replace(/\s+/g, '');
+        x = x.charAt(0).toUpperCase() + x.slice(1);
+        y = y.charAt(0).toLowerCase() + y.slice(1);
+        z = z.charAt(0).toLowerCase() + z.slice(1);
+        moodPhrase = `${x}-${y}-${z}`;
+        moodEmoji.textContent = moodLevelData.emoji;
+        const rarityData = getRarity(metrics.uniqueEmojis, metrics.averageRating, false);
+        if (rarityData.name === 'Обычное') {
+          rarityBadge.style.display = 'none';
+        } else {
+          rarityBadge.style.display = '';
+          rarityBadge.textContent = rarityData.name;
+          rarityBadge.className = `rarity-badge ${rarityData.class}`;
+        }
       }
-
-      // Делаем первую букву заглавной
-      moodPhrase = moodPhrase.charAt(0).toUpperCase() + moodPhrase.slice(1);
-
-      // Обновляем элементы результата
       moodLevel.textContent = moodLevelData.level;
-      moodEmoji.textContent = moodLevelData.emoji;
       moodText.textContent = moodPhrase;
-      rarityBadge.textContent = rarityData.name;
-      rarityBadge.className = `rarity-badge ${rarityData.class}`;
-
-      // Показываем кнопку минта для редких сетов
-      if (shouldShowMintButton(metrics.uniqueEmojis, rarityData.class)) {
-        setTimeout(() => {
-          //mintButtonContainer.classList.add('show');
-        }, 500);
-      }
-
-      // Показываем результат
       setTimeout(() => {
         resultContainer.classList.add('show');
       }, 300);
@@ -1175,12 +1275,12 @@
       }
     }
 
-    // Инициализация
+    // Инициализация: установка фонов для слотов
     slotEls.forEach(slot => {
       setSlotBackground(slot, slot.textContent);
     });
 
-    // События
+    // События: запуск слотов и минт NFT
     spinBtn.addEventListener('click', spinSlots);
     mintButton.addEventListener('click', mintNFT);
   </script>
