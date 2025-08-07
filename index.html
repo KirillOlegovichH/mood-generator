@@ -1106,7 +1106,7 @@
       let moodPhrase = "";
       if (arr[0] === arr[1] && arr[1] === arr[2]) {
         // 1. Для легендарных: отправляем запрос с короной
-        moodPhrase = `Очень ${obj0.moodParts[2]}!`;
+        moodPhrase = `Абсолютно ${obj0.moodParts[2]}!`;
         const emojiString = encodeURIComponent(arr[0] + '_👑');
         const apiUrl = `https://emojik.vercel.app/s/${emojiString}?size=48`;
         moodEmoji.innerHTML = '';
@@ -1149,15 +1149,18 @@
         } else if (arr[0] === arr[2]) {
           mainEmoji = obj0;
           extraEmoji = obj1;
+        } else if (arr[1] === arr[2]) {
+          mainEmoji = obj1;
+          extraEmoji = obj0;
         } else {
           mainEmoji = obj1;
           extraEmoji = obj0;
         }
+        // Новая формула: "Очень {mainEmoji.moodParts[0]} — {extraEmoji.moodParts[2]}"
         let first = mainEmoji.moodParts[0].replace(/\s+/g, '');
         let second = extraEmoji.moodParts[2].replace(/\s+/g, '');
         first = first.charAt(0).toUpperCase() + first.slice(1);
-        second = second.charAt(0).toLowerCase() + second.slice(1);
-        moodPhrase = `${first}-${second}`;
+        moodPhrase = `Очень ${first}-${second}`;
         const uniqueEmojisArr = Array.from(new Set(arr));
         const emojiString = uniqueEmojisArr.join('_');
         const apiUrl = `https://emojik.vercel.app/s/${encodeURIComponent(emojiString)}?size=48`;
