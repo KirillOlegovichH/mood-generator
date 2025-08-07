@@ -457,21 +457,21 @@
     }
     .fusion-emoji.left {
       left: 0;
-      animation: fusion-move-left 0.9s cubic-bezier(.7,2,.3,1) forwards;
+      animation: fusion-move-left 1.2s cubic-bezier(.5,.2,.3,1) forwards;
     }
     .fusion-emoji.right {
       right: 0;
-      animation: fusion-move-right 0.9s cubic-bezier(.7,2,.3,1) forwards;
+      animation: fusion-move-right 1.2s cubic-bezier(.5,.2,.3,1) forwards;
     }
     @keyframes fusion-move-right {
-      0% { transform: translateY(-50%) translateX(-60px); opacity: 0.8; }
-      50% { transform: translateY(-50%) translateX(-20px); opacity: 0.6; }
-      100% { transform: translateY(-50%) translateX(20px); opacity: 0; }
+      0% { transform: translateY(-50%) translateX(-60px); opacity: 0.85; }
+      50% { transform: translateY(-50%) translateX(-20px); opacity: 0.7; }
+      100% { transform: translateY(-50%) translateX(10px); opacity: 0.1; }
     }
     @keyframes fusion-move-left {
-      0% { transform: translateY(-50%) translateX(60px); opacity: 0.8; }
-      50% { transform: translateY(-50%) translateX(20px); opacity: 0.6; }
-      100% { transform: translateY(-50%) translateX(-20px); opacity: 0; }
+      0% { transform: translateY(-50%) translateX(60px); opacity: 0.85; }
+      50% { transform: translateY(-50%) translateX(20px); opacity: 0.7; }
+      100% { transform: translateY(-50%) translateX(-10px); opacity: 0.1; }
     }
     .fusion-magic {
       position: absolute;
