@@ -1188,7 +1188,7 @@
         // 1. Для легендарных: отправляем запрос с короной
         moodPhrase = `Абсолютно ${obj0.moodParts[2]}!`;
         const emojiString = encodeURIComponent(arr[0] + '_👑');
-        const apiUrl = `https://emojik.vercel.app/s/${emojiString}?size=44`;
+        const apiUrl = `https://emojik.vercel.app/s/${emojiString}?size=64`;
         // Показываем fusion loader
         playFusionLoader(arr[0], '👑', () => {
           fetch(apiUrl).then(resp => {
@@ -1245,7 +1245,7 @@
         moodPhrase = `Очень ${first} — ${second}`;
         const uniqueEmojisArr = Array.from(new Set(arr));
         const emojiString = uniqueEmojisArr.join('_');
-        const apiUrl = `https://emojik.vercel.app/s/${encodeURIComponent(emojiString)}?size=44`;
+        const apiUrl = `https://emojik.vercel.app/s/${encodeURIComponent(emojiString)}?size=64`;
         // Показываем fusion loader
         playFusionLoader(uniqueEmojisArr[0], uniqueEmojisArr[1], () => {
           fetch(apiUrl).then(resp => {
